@@ -480,6 +480,18 @@
       height: auto;
       display: block;
     }
+
+    .menu-error {
+      display: none;
+      text-align: center;
+      color: var(--gray);
+      font-size: 13px;
+      padding: 40px 24px;
+    }
+
+    .menu-error.show {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -595,14 +607,30 @@
 
     <div class="img-wrap">
       <img id="menu-img" src="" alt="Menu Burger Doze" />
+      <p id="menu-error" class="menu-error">No se pudo cargar el menú, inténtalo de nuevo</p>
     </div>
   </div>
 
   <script>
+    // Endpoint de thumbnail de Drive (el de uc?export=view devuelve 403 desde
+    // que Google quitó las cookies de terceros).
+    const DRIVE = id => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+
+    // Para actualizar el menú, el restaurante debe REEMPLAZAR el archivo en Drive
+    // (clic derecho → Gestionar versiones → Subir nueva versión), NO borrarlo y
+    // subir uno nuevo, porque eso cambia el ID y rompe el enlace.
+    // La carpeta/archivos deben estar como 'Cualquiera con el enlace'.
+    const MENU_IDS = {
+      es: '1dFGDCWwTaOhsR2RShnTy2_XQVABKAONe',
+      en: '19yoKQv78FAdZedf7XSUggb3YK4jScRF-',
+      de: '1SIFDHtRoiV7Ciq8czQvyjGH1_qv489bA',
+      cervezas: '19UgWaHzpN1ZFLTwVGwyT2rGFhFjULI1L',
+    };
+
     const langs = {
-      es: { flag: '🇪🇸', label: 'ES', file: 'menu-es.jpg' },
-      en: { flag: '🇬🇧', label: 'EN', file: 'menu-en.jpg' },
-      de: { flag: '🇩🇪', label: 'DE', file: 'menu-de.jpg' },
+      es: { flag: '🇪🇸', label: 'ES', file: DRIVE(MENU_IDS.es) },
+      en: { flag: '🇬🇧', label: 'EN', file: DRIVE(MENU_IDS.en) },
+      de: { flag: '🇩🇪', label: 'DE', file: DRIVE(MENU_IDS.de) },
     };
 
     let currentLang = null;
@@ -640,7 +668,7 @@
       setTypeUI(type);
 
       if (type === 'cervezas') {
-        showImage('menu-cervezas.jpg');
+        showImage(DRIVE(MENU_IDS.cervezas));
       } else {
         loadMenu(currentLang);
       }
@@ -654,6 +682,17 @@
 
     function showImage(file) {
       const img = document.getElementById('menu-img');
+      const err = document.getElementById('menu-error');
+      err.classList.remove('show');
+      img.style.display = 'block';
+      img.onerror = () => {
+        img.style.display = 'none';
+        err.classList.add('show');
+      };
+      img.onload = () => {
+        img.style.display = 'block';
+        err.classList.remove('show');
+      };
       img.src = file;
       document.querySelector('.img-wrap').scrollTop = 0;
     }
