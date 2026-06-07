@@ -469,6 +469,7 @@
     /* IMAGE VIEWER */
     .img-wrap {
       flex: 1;
+      min-height: 0; /* permite que el scroll interno funcione en flex (si no, la imagen se corta por abajo en horizontal) */
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
