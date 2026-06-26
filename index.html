@@ -379,7 +379,7 @@
     /* MENU TYPE TOGGLE (Carta / Cervezas) */
     .type-switcher {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       padding: 10px 16px 0;
       background: var(--dark);
       flex-shrink: 0;
@@ -390,8 +390,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 9px 4px;
+      gap: 5px;
+      padding: 9px 3px;
       border-radius: 8px 8px 0 0;
       border: 1px solid var(--border);
       border-bottom: none;
@@ -399,8 +399,9 @@
       color: var(--gray);
       font-size: 12px;
       font-weight: 700;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       text-transform: uppercase;
+      white-space: nowrap;
       cursor: pointer;
       transition: all 0.2s;
       -webkit-tap-highlight-color: transparent;
@@ -476,7 +477,7 @@
       background: var(--black);
     }
 
-    #menu-img {
+    #menu-pages img {
       width: 100%;
       height: auto;
       display: block;
@@ -592,6 +593,9 @@
       <button class="type-btn" id="btn-cervezas" onclick="switchType('cervezas')">
         🍺 Cervezas
       </button>
+      <button class="type-btn" id="btn-bebidas" onclick="switchType('bebidas')">
+        🥤 Bebidas
+      </button>
     </div>
 
     <div class="lang-switcher" id="lang-switcher">
@@ -607,7 +611,7 @@
     </div>
 
     <div class="img-wrap">
-      <img id="menu-img" src="" alt="Menu Burger Doze" />
+      <div id="menu-pages"></div>
       <p id="menu-error" class="menu-error">No se pudo cargar el menú, inténtalo de nuevo</p>
     </div>
   </div>
@@ -634,6 +638,9 @@
       de: { flag: '🇩🇪', label: 'DE', file: DRIVE(MENU_IDS.de) },
     };
 
+    // Carta de bebidas y postres: 2 páginas servidas en local (sin variantes de idioma).
+    const BEBIDAS_PAGES = ['CARTA_BEBIDASPOSTRES.jpeg', 'CARTA_BEBIDASPOSTRES2.jpeg'];
+
     let currentLang = null;
     let currentType = 'carta';
 
@@ -655,7 +662,7 @@
       document.querySelectorAll('.switch-btn').forEach(btn => btn.classList.remove('active'));
       document.getElementById(`btn-${lang}`).classList.add('active');
 
-      showImage(file);
+      showImages(file);
     }
 
     function switchLang(lang) {
@@ -669,7 +676,9 @@
       setTypeUI(type);
 
       if (type === 'cervezas') {
-        showImage(DRIVE(MENU_IDS.cervezas));
+        showImages(DRIVE(MENU_IDS.cervezas));
+      } else if (type === 'bebidas') {
+        showImages(BEBIDAS_PAGES);
       } else {
         loadMenu(currentLang);
       }
@@ -678,30 +687,38 @@
     function setTypeUI(type) {
       document.getElementById('btn-carta').classList.toggle('active', type === 'carta');
       document.getElementById('btn-cervezas').classList.toggle('active', type === 'cervezas');
-      document.getElementById('lang-switcher').classList.toggle('hidden', type === 'cervezas');
+      document.getElementById('btn-bebidas').classList.toggle('active', type === 'bebidas');
+      // El selector de idioma solo aplica a la Carta (cervezas y bebidas no tienen variantes).
+      document.getElementById('lang-switcher').classList.toggle('hidden', type !== 'carta');
     }
 
-    function showImage(file) {
-      const img = document.getElementById('menu-img');
+    // Muestra una o varias páginas apiladas. Solo enseña el error si fallan todas.
+    function showImages(files) {
+      const list = Array.isArray(files) ? files : [files];
+      const pages = document.getElementById('menu-pages');
       const err = document.getElementById('menu-error');
       err.classList.remove('show');
-      img.style.display = 'block';
-      img.onerror = () => {
-        img.style.display = 'none';
-        err.classList.add('show');
-      };
-      img.onload = () => {
-        img.style.display = 'block';
-        err.classList.remove('show');
-      };
-      img.src = file;
+      pages.innerHTML = '';
+
+      let failed = 0;
+      list.forEach((src, i) => {
+        const img = document.createElement('img');
+        img.alt = `Carta Burger Doze ${i + 1}`;
+        img.onerror = () => {
+          img.style.display = 'none';
+          if (++failed === list.length) err.classList.add('show');
+        };
+        img.src = src;
+        pages.appendChild(img);
+      });
+
       document.querySelector('.img-wrap').scrollTop = 0;
     }
 
     function goBack() {
       document.getElementById('viewer').classList.remove('active');
       document.getElementById('splash').classList.remove('hidden');
-      document.getElementById('menu-img').src = '';
+      document.getElementById('menu-pages').innerHTML = '';
     }
   </script>
 
