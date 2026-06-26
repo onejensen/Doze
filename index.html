@@ -376,7 +376,7 @@
       font-size: 16px;
     }
 
-    /* MENU TYPE TOGGLE (Carta / Cervezas) */
+    /* MENU TYPE TOGGLE (Carta / Bebidas) */
     .type-switcher {
       display: flex;
       gap: 6px;
@@ -590,9 +590,6 @@
       <button class="type-btn active" id="btn-carta" onclick="switchType('carta')">
         🍔 Carta
       </button>
-      <button class="type-btn" id="btn-cervezas" onclick="switchType('cervezas')">
-        🍺 Cervezas
-      </button>
       <button class="type-btn" id="btn-bebidas" onclick="switchType('bebidas')">
         🥤 Bebidas
       </button>
@@ -629,7 +626,6 @@
       es: '1dFGDCWwTaOhsR2RShnTy2_XQVABKAONe',
       en: '19yoKQv78FAdZedf7XSUggb3YK4jScRF-',
       de: '1SIFDHtRoiV7Ciq8czQvyjGH1_qv489bA',
-      cervezas: '19UgWaHzpN1ZFLTwVGwyT2rGFhFjULI1L',
     };
 
     const langs = {
@@ -675,9 +671,7 @@
       currentType = type;
       setTypeUI(type);
 
-      if (type === 'cervezas') {
-        showImages(DRIVE(MENU_IDS.cervezas));
-      } else if (type === 'bebidas') {
+      if (type === 'bebidas') {
         showImages(BEBIDAS_PAGES);
       } else {
         loadMenu(currentLang);
@@ -686,9 +680,8 @@
 
     function setTypeUI(type) {
       document.getElementById('btn-carta').classList.toggle('active', type === 'carta');
-      document.getElementById('btn-cervezas').classList.toggle('active', type === 'cervezas');
       document.getElementById('btn-bebidas').classList.toggle('active', type === 'bebidas');
-      // El selector de idioma solo aplica a la Carta (cervezas y bebidas no tienen variantes).
+      // El selector de idioma solo aplica a la Carta (Bebidas no tiene variantes).
       document.getElementById('lang-switcher').classList.toggle('hidden', type !== 'carta');
     }
 
