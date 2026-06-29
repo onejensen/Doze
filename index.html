@@ -588,10 +588,10 @@
 
     <div class="type-switcher">
       <button class="type-btn active" id="btn-carta" onclick="switchType('carta')">
-        🍔 Carta
+        🍔 <span id="label-carta">Carta</span>
       </button>
       <button class="type-btn" id="btn-bebidas" onclick="switchType('bebidas')">
-        🥤 Bebidas y postres
+        🥤 <span id="label-bebidas">Bebidas y postres</span>
       </button>
     </div>
 
@@ -637,6 +637,13 @@
     // Carta de bebidas y postres: 2 páginas servidas en local (sin variantes de idioma).
     const BEBIDAS_PAGES = ['CARTA_BEBIDASPOSTRES.jpeg', 'CARTA_BEBIDASPOSTRES2.jpeg'];
 
+    // Etiquetas de las pestañas según el idioma seleccionado.
+    const typeLabels = {
+      es: { carta: 'Carta', bebidas: 'Bebidas y postres' },
+      en: { carta: 'Menu', bebidas: 'Drinks & desserts' },
+      de: { carta: 'Speisekarte', bebidas: 'Getränke & Desserts' },
+    };
+
     let currentLang = null;
     let currentType = 'carta';
 
@@ -658,6 +665,7 @@
       document.querySelectorAll('.switch-btn').forEach(btn => btn.classList.remove('active'));
       document.getElementById(`btn-${lang}`).classList.add('active');
 
+      setTypeLabels(lang);
       showImages(file);
     }
 
@@ -676,6 +684,12 @@
       } else {
         loadMenu(currentLang);
       }
+    }
+
+    function setTypeLabels(lang) {
+      const t = typeLabels[lang] || typeLabels.es;
+      document.getElementById('label-carta').textContent = t.carta;
+      document.getElementById('label-bebidas').textContent = t.bebidas;
     }
 
     function setTypeUI(type) {
